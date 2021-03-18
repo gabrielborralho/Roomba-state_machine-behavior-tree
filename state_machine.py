@@ -63,13 +63,14 @@ class MoveForwardState(State):
         # Todo: add logic to check and execute state transition
         if agent.get_bumper_state():
             state_machine.change_state(GoBackState())
-        if self.t == MOVE_FORWARD_TIME:
+        if self.t > MOVE_FORWARD_TIME:
             state_machine.change_state(MoveInSpiralState())
         pass
 
     def execute(self, agent):
         # Todo: add execution logic
         self.t = self.n * SAMPLE_TIME
+        print("Tempo em frente = {:.2f} segundos".format(self.t))
         agent.set_velocity(FORWARD_SPEED, 0.0)
         self.n += 1
         pass
@@ -86,17 +87,18 @@ class MoveInSpiralState(State):
         # Todo: add logic to check and execute state transition
         if agent.get_bumper_state():
             state_machine.change_state(GoBackState())
-        if self.t == MOVE_IN_SPIRAL_TIME:
+        if self.t > MOVE_IN_SPIRAL_TIME:
             state_machine.change_state(MoveForwardState())
         pass
 
     def execute(self, agent):
         # Todo: add execution logic
         self.t = self.n * SAMPLE_TIME
-        r = INITIAL_RADIUS_SPIRAL + SPIRAL_FACTOR*self.t
+        r = INITIAL_RADIUS_SPIRAL + SPIRAL_FACTOR * self.t
         w = FORWARD_SPEED/r
         agent.set_velocity(FORWARD_SPEED, w)
         self.n += 1
+        print("Tempo em espiral= {:.2f} segundos".format(self.t))
         pass
 
 
@@ -108,7 +110,7 @@ class GoBackState(State):
 
     def check_transition(self, agent, state_machine):
         # Todo: add logic to check and execute state transition
-        if self.n == (GO_BACK_TIME/SAMPLE_TIME):
+        if self.n > (GO_BACK_TIME/SAMPLE_TIME):
             state_machine.change_state(RotateState())
         pass
 
@@ -125,13 +127,13 @@ class RotateState(State):
         # Todo: add initialization code
         self.t = 0.0
         self.n = 0.0
-        self.s = randint(-1, 1)
+        self.s = randint(-1, 1) # Sinal aleatório para mudar o sentido do angulo
         if self.s == 0:
             self.s = 1
 
     def check_transition(self, agent, state_machine):
         # Todo: add logic to check and execute state transition
-        if self.t == 2.0:
+        if self.t > 2.0:
             state_machine.change_state(MoveForwardState())
         pass
 
@@ -140,4 +142,5 @@ class RotateState(State):
         self.t = self.n * SAMPLE_TIME
         agent.set_velocity(0.0, self.s*ANGULAR_SPEED)
         self.n += 1
+        print("Tempo Rotacionando = {:.2f} segundos".format(self.t))
         pass
